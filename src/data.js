@@ -49,3 +49,9 @@ export const CERTS = [
   { title: "July Hackathon 2026", issuer: "JRA Foundation", date: "July 2026", team: "Buggy_Coders", text: "Certificate of Participation for a 72-hour online build sprint (28–31 July 2026), part of the 1st Conclave on July Revolution.", img: "/certs/july-hackathon.jpg", pdf: "/certs/july-hackathon.pdf" },
   { title: "AI Hackathon, AI Dev Fest 2026", issuer: "DIU CPC, Daffodil International University", date: "7 October 2026", team: "4LG0_R1THM", text: "Certificate of Appreciation for participating in the AI Hackathon, organized under the Department of CSE.", img: "/certs/ai-dev-fest.jpg", pdf: "/certs/ai-dev-fest.pdf" },
 ];
+
+export const SKILL_INFO = {
+  "Languages & Systems": "The foundation: writing, running and debugging software close to the system.",
+  "Cloud & Networks": "Learning how systems are deployed, connected and scaled.",
+  "Tools & Workflows": "How I version, package and ship my work.",
+};

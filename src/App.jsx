@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, MotionConfig, useScroll, useSpring, useInView, animate } from "framer-motion";
-import { Github, Linkedin, Mail, Download, ExternalLink, X, MapPin, Camera, ArrowDown, ArrowLeft, ArrowRight, Send, Sun, Moon, Menu, Award } from "lucide-react";
-import { ME, SKILLS, PROJECTS, PHOTOS, TIMELINE, CERTS, EXTS } from "./data";
+import { motion, AnimatePresence, MotionConfig, useScroll, useSpring, useInView, useTransform, animate } from "framer-motion";
+import { Github, Linkedin, Mail, Download, ExternalLink, X, MapPin, Camera, ArrowDown, ArrowLeft, ArrowRight, Send, Sun, Moon, Menu, Award, ArrowUpRight } from "lucide-react";
+import { ME, SKILLS, PROJECTS, PHOTOS, TIMELINE, CERTS, SKILL_INFO, EXTS } from "./data";
 
 const fade = { initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-60px" }, transition: { duration: 0.5 } };
 const LINKS = ["About", "Skills", "Projects", "Certificates", "Photography", "Contact"];
@@ -101,10 +101,13 @@ function Nav({ theme, toggle }) {
 }
 
 function Hero() {
+  const { scrollY } = useScroll();
+  const yL = useTransform(scrollY, [0, 600], [0, -50]);
+  const yR = useTransform(scrollY, [0, 600], [0, 50]);
   return (
     <section id="about" className="relative mx-auto grid min-h-screen max-w-6xl items-center gap-12 px-5 pb-20 pt-28 md:grid-cols-[1.4fr_1fr]">
       <div className="pointer-events-none absolute -left-40 top-20 h-96 w-96 rounded-full bg-accent2/20 blur-3xl" />
-      <div className="relative order-2 md:order-1">
+      <motion.div style={{ y: yL }} className="relative order-2 md:order-1">
         <a href={`mailto:${ME.email}`} className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-sm text-emerald-500">
           <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" /></span>
           Available for full-time roles &amp; internships
@@ -118,15 +121,23 @@ function Hero() {
           ))}
         </h1>
         <p className="mt-5 max-w-xl text-lg text-muted">I'm an ICE student building my skills in cloud, Python and machine learning. I build practical tools, from network scanners and ML classifiers to full-stack marketplaces.</p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <a href="#projects" className="flex items-center gap-2 rounded-full bg-gradient-to-r from-accent to-accent2 px-6 py-3 font-semibold text-onaccent transition hover:scale-105">Explore Work <ArrowDown size={16} /></a>
-          <a href={ME.resume} target="_blank" rel="noreferrer" className="rounded-full border border-line/20 px-6 py-3 font-semibold hover:bg-card/10">View Resume</a>
+        <div className="mt-8 flex flex-wrap items-center gap-4">
+          <a href="#projects" className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-accent to-accent2 px-7 py-3.5 font-semibold text-onaccent shadow-lg shadow-accent/20 transition hover:scale-105 hover:shadow-accent/40 active:scale-95 before:absolute before:inset-0 before:-translate-x-full before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:transition-transform before:duration-700 hover:before:translate-x-full">
+            <span className="relative">Explore Work</span><ArrowDown size={16} className="relative transition group-hover:translate-y-1" />
+          </a>
+          <a href="#contact" className="group relative flex items-center overflow-hidden rounded-full border border-accent/60 px-7 py-3.5 font-semibold text-accent transition hover:scale-105 active:scale-95">
+            <span className="absolute inset-0 translate-y-full bg-accent transition-transform duration-300 group-hover:translate-y-0" />
+            <span className="relative flex items-center gap-2 transition-colors duration-300 group-hover:text-onaccent"><Mail size={16} /> Get in touch</span>
+          </a>
+          <a href={ME.resume} target="_blank" rel="noreferrer" className="group flex items-center gap-1.5 border-b-2 border-fg/30 pb-0.5 font-semibold transition hover:border-accent hover:text-accent">
+            View Resume <ArrowUpRight size={16} className="transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </a>
         </div>
-      </div>
-      <div className="relative order-1 mx-auto md:order-2">
+      </motion.div>
+      <motion.div style={{ y: yR }} className="relative order-1 mx-auto md:order-2">
         <div className="absolute -inset-1 animate-pulse rounded-[2.5rem] bg-gradient-to-tr from-accent via-accent2 to-accent opacity-60 blur-xl" />
         <motion.div whileHover={{ scale: 1.04 }} className="relative"><Img base={ME.dp} alt={`Portrait of ${ME.name}`} className="h-72 w-64 rounded-[2.5rem] border-2 border-accent/50 object-cover md:h-96 md:w-80" /></motion.div>
-      </div>
+      </motion.div>
       <motion.a href="#skills" aria-label="Scroll down" animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 1.8 }} className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-1 text-xs text-muted md:flex">Scroll <ArrowDown size={14} /></motion.a>
     </section>
   );
@@ -180,19 +191,35 @@ function Stats() {
   );
 }
 
+function Panel({ name, items, i, n }) {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const scale = useTransform(scrollYProgress, [0, 1], [1, i === n - 1 ? 1 : 0.92]);
+  return (
+    <div ref={ref} className={i === n - 1 ? "" : "h-[75vh]"}>
+      <div className="sticky" style={{ top: 96 + i * 20 }}>
+        <motion.div style={{ scale }} className="relative origin-top overflow-hidden rounded-3xl border border-line/15 bg-bg p-8 shadow-2xl md:p-12">
+          <div className="absolute inset-0 bg-card/[0.04]" />
+          <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-accent2/20 blur-3xl" />
+          <div className="relative">
+            <span className="font-mono text-sm text-accent">0{i + 1} / 0{n}</span>
+            <h3 className="mt-3 text-3xl font-bold tracking-tight md:text-5xl">{name}</h3>
+            <p className="mt-3 max-w-xl text-muted">{SKILL_INFO[name]}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              {items.map((s) => <motion.span key={s} whileHover={{ y: -4 }} className="cursor-default rounded-lg border border-line/10 bg-bg px-4 py-2 text-sm transition hover:border-accent/60 hover:shadow-[0_0_20px_rgb(var(--accent)/.35)]">{s}</motion.span>)}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
 function Skills() {
-  const tabs = Object.keys(SKILLS);
-  const [tab, setTab] = useState(tabs[0]);
+  const g = Object.entries(SKILLS);
   return (
     <Section id="skills" title="Core competencies" sub="The languages, platforms and tools I use to build and ship.">
-      <div role="tablist" className="mb-6 flex flex-wrap gap-2">
-        {tabs.map((t) => <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`rounded-full border px-4 py-2 text-sm transition ${tab === t ? "border-accent bg-accent/10 text-accent" : "border-line/10 text-muted hover:text-fg"}`}>{t}</button>)}
-      </div>
-      <AnimatePresence mode="wait">
-        <motion.div key={tab} role="tabpanel" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="flex flex-wrap gap-3 rounded-2xl border border-line/10 bg-card/[0.04] p-6">
-          {SKILLS[tab].map((s) => <motion.span key={s} whileHover={{ y: -4 }} className="cursor-default rounded-lg border border-line/10 bg-bg px-4 py-2 text-sm transition hover:border-accent/60 hover:shadow-[0_0_20px_rgb(var(--accent)/.35)]">{s}</motion.span>)}
-        </motion.div>
-      </AnimatePresence>
+      {g.map(([name, items], i) => <Panel key={name} name={name} items={items} i={i} n={g.length} />)}
     </Section>
   );
 }
@@ -232,29 +259,47 @@ function Projects() {
   );
 }
 
+function CertGrid({ items }) {
+  return (
+    <div className="grid gap-6 md:grid-cols-2">
+      {items.map((c) => (
+        <motion.article key={c.title} {...fade} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line/10 bg-card/[0.04] transition hover:border-accent/40">
+          <a href={c.pdf} target="_blank" rel="noreferrer" aria-label={`View ${c.title} certificate`} className="block overflow-hidden bg-card/10">
+            <img src={c.img} alt={`${c.title} certificate`} loading="lazy" className="aspect-[16/10] w-full object-cover object-top transition duration-500 group-hover:scale-105" />
+          </a>
+          <div className="flex flex-1 flex-col p-6">
+            <p className="flex items-center gap-2 text-sm text-accent"><Award size={15} /> {c.date}</p>
+            <h3 className="mt-1 text-xl font-semibold">{c.title}</h3>
+            <p className="text-sm text-muted/80">{c.issuer} · Team {c.team}</p>
+            <p className="mt-2 flex-1 text-muted">{c.text}</p>
+            <div className="mt-5 flex gap-4 text-sm font-medium">
+              <a href={c.pdf} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-accent hover:underline"><ExternalLink size={15} /> View certificate</a>
+              <a href={c.pdf} download className="flex items-center gap-1.5 hover:underline"><Download size={15} /> Download</a>
+            </div>
+          </div>
+        </motion.article>
+      ))}
+    </div>
+  );
+}
+
 function Certificates() {
   return (
-    <Section id="certificates" title="Certifications" sub="Hackathons and events I've taken part in.">
-      <div className="grid gap-6 md:grid-cols-2">
-        {CERTS.map((c) => (
-          <motion.article key={c.title} {...fade} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line/10 bg-card/[0.04] transition hover:border-accent/40">
-            <a href={c.pdf} target="_blank" rel="noreferrer" aria-label={`View ${c.title} certificate`} className="block overflow-hidden bg-card/10">
-              <img src={c.img} alt={`${c.title} certificate`} loading="lazy" className="aspect-[16/10] w-full object-cover object-top transition duration-500 group-hover:scale-105" />
-            </a>
-            <div className="flex flex-1 flex-col p-6">
-              <p className="flex items-center gap-2 text-sm text-accent"><Award size={15} /> {c.date}</p>
-              <h3 className="mt-1 text-xl font-semibold">{c.title}</h3>
-              <p className="text-sm text-muted/80">{c.issuer} · Team {c.team}</p>
-              <p className="mt-2 flex-1 text-muted">{c.text}</p>
-              <div className="mt-5 flex gap-4 text-sm font-medium">
-                <a href={c.pdf} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-accent hover:underline"><ExternalLink size={15} /> View certificate</a>
-                <a href={c.pdf} download className="flex items-center gap-1.5 hover:underline"><Download size={15} /> Download</a>
-              </div>
-            </div>
-          </motion.article>
-        ))}
-      </div>
+    <Section id="certificates" title="Certifications" sub="Hackathons and events I've taken part in."
+      action={<a href="#/certificates" className={`${pill} flex items-center gap-2`}>Show all certificates <ArrowRight size={14} /></a>}>
+      <CertGrid items={CERTS.slice(0, 4)} />
     </Section>
+  );
+}
+
+function CertsPage() {
+  return (
+    <main className="mx-auto max-w-6xl px-5 pb-20 pt-28">
+      <a href="#certificates" className="inline-flex items-center gap-2 text-sm text-muted hover:text-accent"><ArrowLeft size={16} /> Back to portfolio</a>
+      <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">Certifications</h1>
+      <p className="mb-10 mt-2 max-w-xl text-muted">All my certificates. Tap any card to open the full PDF.</p>
+      <CertGrid items={CERTS} />
+    </main>
   );
 }
 
@@ -374,14 +419,14 @@ function Contact() {
 
 export default function App() {
   const [theme, toggle] = useTheme();
-  const [route, setRoute] = useState(() => (location.hash === "#/photos" ? "#/photos" : ""));
+  const [route, setRoute] = useState(() => (location.hash.startsWith("#/") ? location.hash : ""));
   useEffect(() => {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-    if (location.hash !== "#/photos") history.replaceState(null, "", location.pathname + location.search);
+    if (!location.hash.startsWith("#/")) history.replaceState(null, "", location.pathname + location.search);
     scrollTo({ top: 0, behavior: "instant" });
   }, []);
   useEffect(() => { const h = () => setRoute(location.hash); addEventListener("hashchange", h); return () => removeEventListener("hashchange", h); }, []);
-  const photos = route === "#/photos";
+  const photos = route.startsWith("#/");
   useEffect(() => {
     if (photos) scrollTo(0, 0);
     else if (route) setTimeout(() => document.getElementById(route.slice(1))?.scrollIntoView(), 60);
@@ -390,8 +435,8 @@ export default function App() {
     <MotionConfig reducedMotion="user">
       <Progress />
       <Nav theme={theme} toggle={toggle} />
-      <motion.div key={photos ? "photos" : "home"} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        {photos ? <PhotosPage /> : (
+      <motion.div key={photos ? route : "home"} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        {photos ? (route === "#/certificates" ? <CertsPage /> : <PhotosPage />) : (
           <main><Hero /><Marquee /><Stats /><Skills /><Projects /><Certificates /><Photography /><Timeline /><Contact /></main>
         )}
       </motion.div>
