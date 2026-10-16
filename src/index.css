@@ -9,7 +9,7 @@ html { scroll-behavior: smooth; }
 body { background: rgb(var(--bg)); color: rgb(var(--fg)); font-family: Inter, system-ui, sans-serif; }
 .theme-anim, .theme-anim * { transition: background-color .35s, border-color .35s, color .35s, fill .35s !important; }
 :focus-visible { outline: 2px solid rgb(var(--accent)); outline-offset: 3px; }
-.marquee { animation: marquee 30s linear infinite; }
+.marquee { animation: marquee 45s linear infinite; }
 @keyframes marquee { to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

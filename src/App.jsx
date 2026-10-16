@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, MotionConfig, useScroll, useSpring, useInView, animate } from "framer-motion";
-import { Github, Linkedin, Mail, Download, ExternalLink, X, MapPin, Camera, ArrowDown, ArrowLeft, ArrowRight, Send, Sun, Moon, Menu } from "lucide-react";
-import { ME, SKILLS, PROJECTS, PHOTOS, TIMELINE, EXTS } from "./data";
+import { Github, Linkedin, Mail, Download, ExternalLink, X, MapPin, Camera, ArrowDown, ArrowLeft, ArrowRight, Send, Sun, Moon, Menu, Award } from "lucide-react";
+import { ME, SKILLS, PROJECTS, PHOTOS, TIMELINE, CERTS, EXTS } from "./data";
 
 const fade = { initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-60px" }, transition: { duration: 0.5 } };
-const LINKS = ["About", "Skills", "Projects", "Photography", "Contact"];
-const WORDS = ["Python", "Cloud", "Machine Learning", "Networking", "Full-stack", "Security"];
+const LINKS = ["About", "Skills", "Projects", "Certificates", "Photography", "Contact"];
+const ROW1 = ["Python", "C / C++", "Linux", "Shell Scripting", "AWS", "Docker", "Git & GitHub"];
+const ROW2 = ["Cloud Computing", "Machine Learning", "Network Architecture", "Telecommunications", "Distributed Systems", "Full-stack Web"];
 const pill = "rounded-full border border-line/20 px-5 py-2.5 text-sm font-medium transition hover:border-accent hover:text-accent";
 
 // Tries each file extension until the photo loads
@@ -61,9 +62,9 @@ function Nav({ theme, toggle }) {
     <>
       <header className="fixed inset-x-0 top-4 z-50 flex justify-center px-3">
         <nav aria-label="Main" className="flex items-center gap-1 rounded-full border border-line/10 bg-bg/70 px-2 py-1.5 shadow-xl backdrop-blur-md">
-          <button onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open} className="p-2 text-muted hover:text-accent md:hidden"><Menu size={18} /></button>
-          {LINKS.map((l) => <a key={l} href={`#${l.toLowerCase()}`} className="hidden rounded-full px-3 py-1.5 text-sm text-muted hover:bg-card/10 hover:text-fg md:block">{l}</a>)}
-          <span className="mx-1 hidden h-5 w-px bg-line/10 md:block" />
+          <button onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open} className="p-2 text-muted hover:text-accent lg:hidden"><Menu size={18} /></button>
+          {LINKS.map((l) => <a key={l} href={`#${l.toLowerCase()}`} className="hidden rounded-full px-3 py-1.5 text-sm text-muted hover:bg-card/10 hover:text-fg lg:block">{l}</a>)}
+          <span className="mx-1 hidden h-5 w-px bg-line/10 lg:block" />
           {icons.map(([I, h, n]) => <a key={n} href={h} aria-label={n} target="_blank" rel="noreferrer" className="p-2 text-muted hover:text-accent"><I size={18} /></a>)}
           <button onClick={toggle} aria-label={`Switch to ${theme === "dark" ? "day" : "night"} mode`} className="p-2 text-muted hover:text-accent">
             <AnimatePresence mode="wait" initial={false}>
@@ -77,7 +78,7 @@ function Nav({ theme, toggle }) {
       </header>
       <AnimatePresence>
         {open && (
-          <motion.div role="dialog" aria-modal="true" aria-label="Menu" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] flex flex-col justify-between bg-bg/95 px-8 pb-10 pt-24 backdrop-blur-lg md:hidden">
+          <motion.div role="dialog" aria-modal="true" aria-label="Menu" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] flex flex-col justify-between bg-bg/95 px-8 pb-10 pt-24 backdrop-blur-lg lg:hidden">
             <button aria-label="Close menu" onClick={close} className="absolute right-5 top-5 rounded-full border border-line/15 p-2"><X size={20} /></button>
             <ul>
               {LINKS.map((l, i) => (
@@ -99,16 +100,6 @@ function Nav({ theme, toggle }) {
   );
 }
 
-function Typed({ text }) {
-  const [n, setN] = useState(0);
-  useEffect(() => {
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return setN(text.length);
-    const t = setInterval(() => setN((x) => (x < text.length ? x + 1 : x)), 45);
-    return () => clearInterval(t);
-  }, [text]);
-  return <span>{text.slice(0, n)}</span>;
-}
-
 function Hero() {
   return (
     <section id="about" className="relative mx-auto grid min-h-screen max-w-6xl items-center gap-12 px-5 pb-20 pt-28 md:grid-cols-[1.4fr_1fr]">
@@ -118,7 +109,14 @@ function Hero() {
           <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" /></span>
           Available for full-time roles &amp; internships
         </a>
-        <h1 className="mt-6 min-h-[8.5rem] text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl md:min-h-[11rem] md:text-6xl"><Typed text={`Hi, I'm ${ME.name} — ${ME.role}`} /></h1>
+        <p className="mt-8 font-mono text-sm uppercase tracking-[0.25em] text-accent">Hello, World.</p>
+        <h1 className="mt-3 text-5xl font-extrabold leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl">
+          {ME.name.split(" ").map((w, i, arr) => (
+            <motion.span key={i} initial={{ y: "60%", opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.15 + i * 0.12, duration: 0.6 }} className="mr-[0.25em] inline-block">
+              {w}{i === arr.length - 1 && <span className="text-accent">.</span>}
+            </motion.span>
+          ))}
+        </h1>
         <p className="mt-5 max-w-xl text-lg text-muted">I'm an ICE student building my skills in cloud, Python and machine learning. I build practical tools, from network scanners and ML classifiers to full-stack marketplaces.</p>
         <div className="mt-8 flex flex-wrap gap-3">
           <a href="#projects" className="flex items-center gap-2 rounded-full bg-gradient-to-r from-accent to-accent2 px-6 py-3 font-semibold text-onaccent transition hover:scale-105">Explore Work <ArrowDown size={16} /></a>
@@ -134,13 +132,24 @@ function Hero() {
   );
 }
 
-function Marquee() {
-  const row = [...WORDS, ...WORDS];
+function Row({ items, rev }) {
+  const r = [...items, ...items];
   return (
-    <div aria-hidden className="overflow-hidden border-y border-line/10 py-4">
-      <div className="marquee flex w-max gap-10 whitespace-nowrap text-2xl font-semibold text-muted/70">
-        {[...row, ...row].map((w, i) => <span key={i}>{w} <span className="text-accent">✦</span></span>)}
-      </div>
+    <div className="marquee flex w-max hover:[animation-play-state:paused]" style={rev ? { animationDirection: "reverse" } : undefined}>
+      {[...r, ...r].map((w, i) => (
+        <span key={i} className="mr-3 flex items-center gap-2 whitespace-nowrap rounded-full border border-line/15 bg-card/[0.04] px-5 py-2.5 text-sm font-medium transition hover:border-accent hover:text-accent">
+          <span className="h-1.5 w-1.5 rounded-full bg-accent" />{w}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function Marquee() {
+  return (
+    <div aria-hidden className="space-y-3 overflow-hidden py-8 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+      <Row items={ROW1} />
+      <Row items={ROW2} rev />
     </div>
   );
 }
@@ -217,6 +226,32 @@ function Projects() {
               </div>
             </Tilt>
           </motion.div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function Certificates() {
+  return (
+    <Section id="certificates" title="Certifications" sub="Hackathons and events I've taken part in.">
+      <div className="grid gap-6 md:grid-cols-2">
+        {CERTS.map((c) => (
+          <motion.article key={c.title} {...fade} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line/10 bg-card/[0.04] transition hover:border-accent/40">
+            <a href={c.pdf} target="_blank" rel="noreferrer" aria-label={`View ${c.title} certificate`} className="block overflow-hidden bg-card/10">
+              <img src={c.img} alt={`${c.title} certificate`} loading="lazy" className="aspect-[16/10] w-full object-cover object-top transition duration-500 group-hover:scale-105" />
+            </a>
+            <div className="flex flex-1 flex-col p-6">
+              <p className="flex items-center gap-2 text-sm text-accent"><Award size={15} /> {c.date}</p>
+              <h3 className="mt-1 text-xl font-semibold">{c.title}</h3>
+              <p className="text-sm text-muted/80">{c.issuer} · Team {c.team}</p>
+              <p className="mt-2 flex-1 text-muted">{c.text}</p>
+              <div className="mt-5 flex gap-4 text-sm font-medium">
+                <a href={c.pdf} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-accent hover:underline"><ExternalLink size={15} /> View certificate</a>
+                <a href={c.pdf} download className="flex items-center gap-1.5 hover:underline"><Download size={15} /> Download</a>
+              </div>
+            </div>
+          </motion.article>
         ))}
       </div>
     </Section>
@@ -339,7 +374,12 @@ function Contact() {
 
 export default function App() {
   const [theme, toggle] = useTheme();
-  const [route, setRoute] = useState(location.hash);
+  const [route, setRoute] = useState(() => (location.hash === "#/photos" ? "#/photos" : ""));
+  useEffect(() => {
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    if (location.hash !== "#/photos") history.replaceState(null, "", location.pathname + location.search);
+    scrollTo({ top: 0, behavior: "instant" });
+  }, []);
   useEffect(() => { const h = () => setRoute(location.hash); addEventListener("hashchange", h); return () => removeEventListener("hashchange", h); }, []);
   const photos = route === "#/photos";
   useEffect(() => {
@@ -352,7 +392,7 @@ export default function App() {
       <Nav theme={theme} toggle={toggle} />
       <motion.div key={photos ? "photos" : "home"} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         {photos ? <PhotosPage /> : (
-          <main><Hero /><Marquee /><Stats /><Skills /><Projects /><Photography /><Timeline /><Contact /></main>
+          <main><Hero /><Marquee /><Stats /><Skills /><Projects /><Certificates /><Photography /><Timeline /><Contact /></main>
         )}
       </motion.div>
       <footer className="border-t border-line/10 px-5 py-8 text-center text-sm text-muted">
