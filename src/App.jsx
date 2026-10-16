@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, MotionConfig, useScroll, useSpring, useInView, useTransform, animate } from "framer-motion";
 import { Github, Linkedin, Mail, Download, ExternalLink, X, MapPin, Camera, ArrowDown, ArrowLeft, ArrowRight, Send, Sun, Moon, Menu, Award, ArrowUpRight } from "lucide-react";
-import { ME, SKILLS, PROJECTS, PHOTOS, TIMELINE, CERTS, SKILL_INFO, EXTS } from "./data";
+import { ME, SKILLS, PROJECTS, PHOTOS, TIMELINE, CERTS, EXTS } from "./data";
 
 const fade = { initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-60px" }, transition: { duration: 0.5 } };
 const LINKS = ["About", "Skills", "Projects", "Certificates", "Photography", "Contact"];
@@ -191,35 +191,19 @@ function Stats() {
   );
 }
 
-function Panel({ name, items, i, n }) {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const scale = useTransform(scrollYProgress, [0, 1], [1, i === n - 1 ? 1 : 0.92]);
-  return (
-    <div ref={ref} className={i === n - 1 ? "" : "h-[75vh]"}>
-      <div className="sticky" style={{ top: 96 + i * 20 }}>
-        <motion.div style={{ scale }} className="relative origin-top overflow-hidden rounded-3xl border border-line/15 bg-bg p-8 shadow-2xl md:p-12">
-          <div className="absolute inset-0 bg-card/[0.04]" />
-          <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-accent2/20 blur-3xl" />
-          <div className="relative">
-            <span className="font-mono text-sm text-accent">0{i + 1} / 0{n}</span>
-            <h3 className="mt-3 text-3xl font-bold tracking-tight md:text-5xl">{name}</h3>
-            <p className="mt-3 max-w-xl text-muted">{SKILL_INFO[name]}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              {items.map((s) => <motion.span key={s} whileHover={{ y: -4 }} className="cursor-default rounded-lg border border-line/10 bg-bg px-4 py-2 text-sm transition hover:border-accent/60 hover:shadow-[0_0_20px_rgb(var(--accent)/.35)]">{s}</motion.span>)}
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </div>
-  );
-}
-
 function Skills() {
-  const g = Object.entries(SKILLS);
+  const tabs = Object.keys(SKILLS);
+  const [tab, setTab] = useState(tabs[0]);
   return (
     <Section id="skills" title="Core competencies" sub="The languages, platforms and tools I use to build and ship.">
-      {g.map(([name, items], i) => <Panel key={name} name={name} items={items} i={i} n={g.length} />)}
+      <div role="tablist" className="mb-6 flex flex-wrap gap-2">
+        {tabs.map((t) => <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`rounded-full border px-4 py-2 text-sm transition ${tab === t ? "border-accent bg-accent/10 text-accent" : "border-line/10 text-muted hover:text-fg"}`}>{t}</button>)}
+      </div>
+      <AnimatePresence mode="wait">
+        <motion.div key={tab} role="tabpanel" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="flex flex-wrap gap-3 rounded-2xl border border-line/10 bg-card/[0.04] p-6">
+          {SKILLS[tab].map((s) => <motion.span key={s} whileHover={{ y: -4 }} className="cursor-default rounded-lg border border-line/10 bg-bg px-4 py-2 text-sm transition hover:border-accent/60 hover:shadow-[0_0_20px_rgb(var(--accent)/.35)]">{s}</motion.span>)}
+        </motion.div>
+      </AnimatePresence>
     </Section>
   );
 }
