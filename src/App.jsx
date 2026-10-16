@@ -112,7 +112,7 @@ function Hero() {
           <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" /></span>
           Available for full-time roles &amp; internships
         </a>
-        <p className="mt-8 font-mono text-sm uppercase tracking-[0.25em] text-accent">Hello, World.</p>
+        <p className="mt-8 font-mono text-sm uppercase tracking-[0.25em] text-accent">Hello, World. Myself</p>
         <h1 className="mt-3 text-5xl font-extrabold leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl">
           {ME.name.split(" ").map((w, i, arr) => (
             <motion.span key={i} initial={{ y: "60%", opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.15 + i * 0.12, duration: 0.6 }} className="mr-[0.25em] inline-block">
@@ -230,6 +230,7 @@ function Projects() {
             <Tilt>
               <h3 className="text-xl font-semibold">{p.title}</h3>
               <p className="mt-2 flex-1 text-muted">{p.impact}</p>
+              {p.role && <p className="mt-3 text-sm"><span className="font-semibold text-accent">My role:</span> <span className="text-muted">{p.role}</span></p>}
               <div className="mt-4 flex flex-wrap gap-2">{p.tags.map((t) => <span key={t} className="rounded-full bg-accent2/15 px-3 py-1 text-xs text-accent2">{t}</span>)}</div>
               <div className="mt-5 flex gap-4 text-sm font-medium">
                 {p.demo && <a href={p.demo} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-accent hover:underline"><ExternalLink size={15} /> Live Demo</a>}
@@ -249,7 +250,7 @@ function CertGrid({ items }) {
       {items.map((c) => (
         <motion.article key={c.title} {...fade} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line/10 bg-card/[0.04] transition hover:border-accent/40">
           <a href={c.pdf} target="_blank" rel="noreferrer" aria-label={`View ${c.title} certificate`} className="block overflow-hidden bg-card/10">
-            <img src={c.img} alt={`${c.title} certificate`} loading="lazy" className="aspect-[16/10] w-full object-cover object-top transition duration-500 group-hover:scale-105" />
+            <Img base={c.img} alt={`${c.title} certificate`} loading="lazy" className="aspect-[16/10] w-full object-cover object-top transition duration-500 group-hover:scale-105" />
           </a>
           <div className="flex flex-1 flex-col p-6">
             <p className="flex items-center gap-2 text-sm text-accent"><Award size={15} /> {c.date}</p>
