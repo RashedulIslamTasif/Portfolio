@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, MotionConfig, useScroll, useSpring, useInView, useTransform, animate } from "framer-motion";
-import { Github, Linkedin, Mail, Download, ExternalLink, X, MapPin, Camera, ArrowDown, ArrowLeft, ArrowRight, Send, Sun, Moon, Menu, Award, ArrowUpRight } from "lucide-react";
+import { Github, Linkedin, Mail, Download, ExternalLink, X, MapPin, Camera, ArrowDown, ArrowLeft, ArrowRight, Send, Sun, Moon, Menu, Award, ArrowUpRight, Rocket, Trophy, Cloud } from "lucide-react";
 import { ME, SKILLS, PROJECTS, PHOTOS, TIMELINE, CERTS, EXTS } from "./data";
 
 const fade = { initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-60px" }, transition: { duration: 0.5 } };
@@ -177,16 +177,33 @@ function Count({ to }) {
   return <span ref={ref}>{v}</span>;
 }
 
-function Stats() {
-  const s = [[PROJECTS.length, "Projects built"], [PROJECTS.filter((p) => p.demo).length, "Live apps"], [3, "Focus areas"]];
+function StatCard({ icon: I, n, label, note }) {
+  const onMove = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    e.currentTarget.style.setProperty("--x", `${e.clientX - r.left}px`);
+    e.currentTarget.style.setProperty("--y", `${e.clientY - r.top}px`);
+  };
   return (
-    <div className="mx-auto grid max-w-6xl grid-cols-3 gap-4 px-5 pt-16">
-      {s.map(([n, l]) => (
-        <motion.div key={l} {...fade} className="rounded-2xl border border-line/10 bg-card/[0.04] p-5 text-center">
-          <div className="text-4xl font-extrabold text-accent md:text-5xl"><Count to={n} /></div>
-          <div className="mt-1 text-sm text-muted">{l}</div>
-        </motion.div>
-      ))}
+    <motion.div {...fade} onMouseMove={onMove} whileHover={{ y: -6 }} className="group relative overflow-hidden rounded-2xl border border-line/10 bg-card/[0.04] p-6 transition-colors hover:border-accent/40">
+      <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: "radial-gradient(240px circle at var(--x, 50%) var(--y, 50%), rgb(var(--accent) / .18), transparent 70%)" }} />
+      <I className="relative text-accent" size={22} />
+      <div className="relative mt-4 bg-gradient-to-r from-accent to-accent2 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent"><Count to={n} /></div>
+      <div className="relative mt-1 font-semibold">{label}</div>
+      <div className="relative text-sm text-muted">{note}</div>
+    </motion.div>
+  );
+}
+
+function Stats() {
+  const live = PROJECTS.filter((p) => p.demo).length;
+  return (
+    <div className="mx-auto max-w-6xl px-5 pt-16">
+      <p className="mb-4 font-mono text-sm uppercase tracking-[0.25em] text-accent">At a glance</p>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <StatCard icon={Rocket} n={PROJECTS.length} label="Projects built" note={`${live} live on the web`} />
+        <StatCard icon={Trophy} n={CERTS.length} label="Hackathons" note="AI Dev Fest, July Hackathon" />
+        <StatCard icon={Cloud} n={3} label="Focus areas" note="Cloud · Python · ML" />
+      </div>
     </div>
   );
 }
@@ -402,6 +419,18 @@ function Contact() {
   );
 }
 
+function Clock() {
+  const [t, setT] = useState(() => new Date());
+  useEffect(() => { const i = setInterval(() => setT(new Date()), 30000); return () => clearInterval(i); }, []);
+  const s = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Dhaka" }).format(t);
+  return (
+    <p className="inline-flex items-center gap-2 rounded-full border border-line/10 px-4 py-1.5 text-sm text-muted">
+      <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" /></span>
+      It's {s} in Dhaka
+    </p>
+  );
+}
+
 export default function App() {
   const [theme, toggle] = useTheme();
   const [route, setRoute] = useState(() => (location.hash.startsWith("#/") ? location.hash : ""));
@@ -425,9 +454,10 @@ export default function App() {
           <main><Hero /><Marquee /><Stats /><Skills /><Projects /><Certificates /><Photography /><Timeline /><Contact /></main>
         )}
       </motion.div>
-      <footer className="border-t border-line/10 px-5 py-8 text-center text-sm text-muted">
-        <p>© {new Date().getFullYear()} {ME.name} · {ME.tz}</p>
-        <p className="mt-2 inline-block rounded-full border border-line/10 px-3 py-1">Designed with precision &amp; code</p>
+      <footer className="border-t border-line/10 px-5 py-12 text-center">
+        <Clock />
+        <p className="mt-5 text-lg font-semibold tracking-tight">Designed &amp; coded by {ME.name}.</p>
+        <p className="mt-1 text-sm text-muted">Made in Dhaka, with caffeine and curiosity · © {new Date().getFullYear()}</p>
       </footer>
     </MotionConfig>
   );
