@@ -40,4 +40,6 @@ export const PHOTOS = [
 export const TIMELINE = [
   { when: "Currently pursuing", title: "B.Sc. in Information & Communication Engineering", place: "Bangladesh University of Professionals", text: "Cloud enthusiast, currently learning cloud computing, Python and machine learning." },
   { when: "2024 – Now", title: "Membership Development Secretary", place: "Your Club", text: "Grow the club's membership by recruiting new members, running onboarding and keeping members engaged." },
+  { when: "Completed", title: "Higher Secondary Certificate (HSC)", place: "Adamjee Cantonment College" },
+  { when: "Completed", title: "Secondary School Certificate (SSC)", place: "Baushia M.A. Azher High School" },
 ];

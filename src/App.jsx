@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, MotionConfig, useScroll, useSpring, useInView, animate } from "framer-motion";
-import { Github, Linkedin, Mail, Download, ExternalLink, X, MapPin, Camera, ArrowDown, ArrowLeft, ArrowRight, Send, Sun, Moon } from "lucide-react";
+import { Github, Linkedin, Mail, Download, ExternalLink, X, MapPin, Camera, ArrowDown, ArrowLeft, ArrowRight, Send, Sun, Moon, Menu } from "lucide-react";
 import { ME, SKILLS, PROJECTS, PHOTOS, TIMELINE, EXTS } from "./data";
 
 const fade = { initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-60px" }, transition: { duration: 0.5 } };
@@ -48,23 +48,54 @@ const Section = ({ id, title, sub, action, children }) => (
 );
 
 function Nav({ theme, toggle }) {
+  const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    const k = (e) => e.key === "Escape" && close();
+    addEventListener("keydown", k);
+    return () => { removeEventListener("keydown", k); document.body.style.overflow = ""; };
+  }, [open]);
   const icons = [[Github, ME.github, "GitHub"], [Linkedin, ME.linkedin, "LinkedIn"], [Mail, `mailto:${ME.email}`, "Email"]];
   return (
-    <header className="fixed inset-x-0 top-4 z-50 flex justify-center px-3">
-      <nav aria-label="Main" className="flex items-center gap-1 rounded-full border border-line/10 bg-bg/70 px-2 py-1.5 shadow-xl backdrop-blur-md">
-        {LINKS.map((l) => <a key={l} href={`#${l.toLowerCase()}`} className="hidden rounded-full px-3 py-1.5 text-sm text-muted hover:bg-card/10 hover:text-fg md:block">{l}</a>)}
-        <span className="mx-1 hidden h-5 w-px bg-line/10 md:block" />
-        {icons.map(([I, h, n]) => <a key={n} href={h} aria-label={n} target="_blank" rel="noreferrer" className="p-2 text-muted hover:text-accent"><I size={18} /></a>)}
-        <button onClick={toggle} aria-label={`Switch to ${theme === "dark" ? "day" : "night"} mode`} className="p-2 text-muted hover:text-accent">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span key={theme} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }} className="block">
-              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-            </motion.span>
-          </AnimatePresence>
-        </button>
-        <a href={ME.resume} download className="ml-1 flex items-center gap-1.5 rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-onaccent hover:opacity-90"><Download size={15} /> Resume</a>
-      </nav>
-    </header>
+    <>
+      <header className="fixed inset-x-0 top-4 z-50 flex justify-center px-3">
+        <nav aria-label="Main" className="flex items-center gap-1 rounded-full border border-line/10 bg-bg/70 px-2 py-1.5 shadow-xl backdrop-blur-md">
+          <button onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open} className="p-2 text-muted hover:text-accent md:hidden"><Menu size={18} /></button>
+          {LINKS.map((l) => <a key={l} href={`#${l.toLowerCase()}`} className="hidden rounded-full px-3 py-1.5 text-sm text-muted hover:bg-card/10 hover:text-fg md:block">{l}</a>)}
+          <span className="mx-1 hidden h-5 w-px bg-line/10 md:block" />
+          {icons.map(([I, h, n]) => <a key={n} href={h} aria-label={n} target="_blank" rel="noreferrer" className="p-2 text-muted hover:text-accent"><I size={18} /></a>)}
+          <button onClick={toggle} aria-label={`Switch to ${theme === "dark" ? "day" : "night"} mode`} className="p-2 text-muted hover:text-accent">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span key={theme} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }} className="block">
+                {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+              </motion.span>
+            </AnimatePresence>
+          </button>
+          <a href={ME.resume} download className="ml-1 flex items-center gap-1.5 rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-onaccent hover:opacity-90"><Download size={15} /> Resume</a>
+        </nav>
+      </header>
+      <AnimatePresence>
+        {open && (
+          <motion.div role="dialog" aria-modal="true" aria-label="Menu" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] flex flex-col justify-between bg-bg/95 px-8 pb-10 pt-24 backdrop-blur-lg md:hidden">
+            <button aria-label="Close menu" onClick={close} className="absolute right-5 top-5 rounded-full border border-line/15 p-2"><X size={20} /></button>
+            <ul>
+              {LINKS.map((l, i) => (
+                <motion.li key={l} initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 + i * 0.08, duration: 0.4 }}>
+                  <a href={`#${l.toLowerCase()}`} onClick={close} className="flex items-baseline gap-4 py-2.5 text-4xl font-bold tracking-tight hover:text-accent">
+                    <span className="text-sm font-normal text-accent">0{i + 1}</span>{l}
+                  </a>
+                </motion.li>
+              ))}
+            </ul>
+            <div className="flex items-center gap-4 text-muted">
+              {icons.map(([I, h, n]) => <a key={n} href={h} aria-label={n} target="_blank" rel="noreferrer" className="rounded-full border border-line/15 p-3 hover:text-accent"><I size={20} /></a>)}
+              <a href={ME.resume} download className="ml-auto rounded-full bg-accent px-5 py-3 font-semibold text-onaccent">Resume</a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -267,7 +298,7 @@ function Timeline() {
             <time className="text-sm text-accent">{t.when}</time>
             <h3 className="text-lg font-semibold">{t.title}</h3>
             <p className="text-sm text-muted/80">{t.place}</p>
-            <p className="mt-1 max-w-xl text-muted">{t.text}</p>
+            {t.text && <p className="mt-1 max-w-xl text-muted">{t.text}</p>}
           </motion.li>
         ))}
       </ol>
