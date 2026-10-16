@@ -9,6 +9,18 @@ const ROW1 = ["Python", "C / C++", "Linux", "Shell Scripting", "AWS", "Docker", 
 const ROW2 = ["Cloud Computing", "Machine Learning", "Network Architecture", "Telecommunications", "Distributed Systems", "Full-stack Web"];
 const pill = "rounded-full border border-line/20 px-5 py-2.5 text-sm font-medium transition hover:border-accent hover:text-accent";
 
+const track = (e) => {
+  const r = e.currentTarget.getBoundingClientRect();
+  e.currentTarget.style.setProperty("--x", `${e.clientX - r.left}px`);
+  e.currentTarget.style.setProperty("--y", `${e.clientY - r.top}px`);
+};
+const Spot = () => (
+  <>
+    <div aria-hidden className="pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: "radial-gradient(260px circle at var(--x, 50%) var(--y, 50%), rgb(var(--accent) / .14), transparent 70%)" }} />
+    <div aria-hidden className="pointer-events-none absolute inset-x-6 top-0 z-10 h-px bg-gradient-to-r from-transparent via-accent/60 to-transparent" />
+  </>
+);
+
 // Tries each file extension until the photo loads
 function Img({ base, onLoad, ...rest }) {
   const [i, setI] = useState(0);
@@ -148,7 +160,7 @@ function Row({ items, rev }) {
   return (
     <div className="marquee flex w-max hover:[animation-play-state:paused]" style={rev ? { animationDirection: "reverse" } : undefined}>
       {[...r, ...r].map((w, i) => (
-        <span key={i} className="mr-3 flex items-center gap-2 whitespace-nowrap rounded-full border border-line/15 bg-card/[0.04] px-5 py-2.5 text-sm font-medium transition hover:border-accent hover:text-accent">
+        <span key={i} className="mr-3 flex items-center gap-2 whitespace-nowrap rounded-full border border-line/15 bg-gradient-to-br from-card/[0.07] to-card/[0.02] px-5 py-2.5 text-sm font-medium transition hover:border-accent hover:text-accent">
           <span className="h-1.5 w-1.5 rounded-full bg-accent" />{w}
         </span>
       ))}
@@ -184,7 +196,7 @@ function StatCard({ icon: I, n, label, note }) {
     e.currentTarget.style.setProperty("--y", `${e.clientY - r.top}px`);
   };
   return (
-    <motion.div {...fade} onMouseMove={onMove} whileHover={{ y: -6 }} className="group relative overflow-hidden rounded-2xl border border-line/10 bg-card/[0.04] p-6 transition-colors hover:border-accent/40">
+    <motion.div {...fade} onMouseMove={onMove} whileHover={{ y: -6 }} className="group relative overflow-hidden rounded-2xl border border-line/10 bg-gradient-to-br from-card/[0.07] to-card/[0.02] p-6 transition-colors hover:border-accent/40">
       <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: "radial-gradient(240px circle at var(--x, 50%) var(--y, 50%), rgb(var(--accent) / .18), transparent 70%)" }} />
       <I className="relative text-accent" size={22} />
       <div className="relative mt-4 bg-gradient-to-r from-accent to-accent2 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent"><Count to={n} /></div>
@@ -214,24 +226,39 @@ function Skills() {
   return (
     <Section id="skills" title="Core competencies" sub="The languages, platforms and tools I use to build and ship.">
       <div role="tablist" className="mb-6 flex flex-wrap gap-2">
-        {tabs.map((t) => <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`rounded-full border px-4 py-2 text-sm transition ${tab === t ? "border-accent bg-accent/10 text-accent" : "border-line/10 text-muted hover:text-fg"}`}>{t}</button>)}
+        {tabs.map((t) => (
+          <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`relative rounded-full border px-4 py-2 text-sm transition ${tab === t ? "border-transparent text-accent" : "border-line/10 text-muted hover:text-fg"}`}>
+            {tab === t && <motion.span layoutId="skilltab" className="absolute inset-0 rounded-full border border-accent bg-accent/10" />}
+            <span className="relative">{t}</span>
+          </button>
+        ))}
       </div>
-      <AnimatePresence mode="wait">
-        <motion.div key={tab} role="tabpanel" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="flex flex-wrap gap-3 rounded-2xl border border-line/10 bg-card/[0.04] p-6">
-          {SKILLS[tab].map((s) => <motion.span key={s} whileHover={{ y: -4 }} className="cursor-default rounded-lg border border-line/10 bg-bg px-4 py-2 text-sm transition hover:border-accent/60 hover:shadow-[0_0_20px_rgb(var(--accent)/.35)]">{s}</motion.span>)}
-        </motion.div>
-      </AnimatePresence>
+      <div onMouseMove={track} className="group relative min-h-[9rem] overflow-hidden rounded-2xl border border-line/10 bg-gradient-to-br from-card/[0.07] to-card/[0.02] p-8">
+        <Spot />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-accent2/15 blur-3xl" />
+        <AnimatePresence mode="wait">
+          <motion.div key={tab} role="tabpanel" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="relative flex flex-wrap gap-3">
+            {SKILLS[tab].map((s, i) => (
+              <motion.span key={s} initial={{ opacity: 0, y: 14, scale: 0.92 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: i * 0.06, type: "spring", stiffness: 260, damping: 18 }} whileHover={{ y: -4 }} className="flex cursor-default items-center gap-2 rounded-lg border border-line/10 bg-bg px-4 py-2 text-sm transition-colors hover:border-accent/60 hover:shadow-[0_0_20px_rgb(var(--accent)/.35)]">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent" />{s}
+              </motion.span>
+            ))}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </Section>
   );
 }
 
-function Tilt({ children }) {
+function Tilt({ children, i }) {
   const [s, setS] = useState({ rotateX: 0, rotateY: 0 });
   return (
     <motion.article style={{ transformPerspective: 900 }} animate={s} transition={{ type: "spring", stiffness: 200, damping: 20 }}
-      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setS({ rotateY: ((e.clientX - r.left) / r.width - 0.5) * 10, rotateX: -((e.clientY - r.top) / r.height - 0.5) * 10 }); }}
+      onMouseMove={(e) => { track(e); const r = e.currentTarget.getBoundingClientRect(); setS({ rotateY: ((e.clientX - r.left) / r.width - 0.5) * 10, rotateX: -((e.clientY - r.top) / r.height - 0.5) * 10 }); }}
       onMouseLeave={() => setS({ rotateX: 0, rotateY: 0 })}
-      className="flex h-full flex-col rounded-2xl border border-line/10 bg-card/[0.04] p-6 hover:border-accent/40">
+      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line/10 bg-gradient-to-br from-card/[0.07] to-card/[0.02] p-6 transition-shadow hover:border-accent/40 hover:shadow-xl hover:shadow-accent/10">
+      <Spot />
+      <span aria-hidden className="pointer-events-none absolute right-5 top-3 font-mono text-6xl font-extrabold text-fg/[0.05]">0{i + 1}</span>
       {children}
     </motion.article>
   );
@@ -242,9 +269,9 @@ function Projects() {
     <Section id="projects" title="Featured projects" sub="Selected work with measurable results."
       action={<a href={`${ME.github}?tab=repositories`} target="_blank" rel="noreferrer" className={`${pill} flex items-center gap-2`}><Github size={16} /> View all on GitHub <ArrowRight size={14} /></a>}>
       <div className="grid auto-rows-fr gap-6 md:grid-cols-2">
-        {PROJECTS.map((p) => (
+        {PROJECTS.map((p, i) => (
           <motion.div key={p.title} {...fade} className="h-full">
-            <Tilt>
+            <Tilt i={i}>
               <h3 className="text-xl font-semibold">{p.title}</h3>
               <p className="mt-2 flex-1 text-muted">{p.impact}</p>
               {p.role && <p className="mt-3 text-sm"><span className="font-semibold text-accent">My role:</span> <span className="text-muted">{p.role}</span></p>}
@@ -265,7 +292,8 @@ function CertGrid({ items }) {
   return (
     <div className="grid gap-6 md:grid-cols-2">
       {items.map((c) => (
-        <motion.article key={c.title} {...fade} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line/10 bg-card/[0.04] transition hover:border-accent/40">
+        <motion.article key={c.title} {...fade} onMouseMove={track} className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line/10 bg-gradient-to-br from-card/[0.07] to-card/[0.02] transition-shadow hover:border-accent/40 hover:shadow-xl hover:shadow-accent/10">
+          <Spot />
           <a href={c.pdf} target="_blank" rel="noreferrer" aria-label={`View ${c.title} certificate`} className="block overflow-hidden bg-card/10">
             <Img base={c.img} alt={`${c.title} certificate`} loading="lazy" className="aspect-[16/10] w-full object-cover object-top transition duration-500 group-hover:scale-105" />
           </a>
@@ -395,20 +423,20 @@ function Contact() {
     location.href = `mailto:${ME.email}?subject=${encodeURIComponent("Portfolio message from " + f.get("name"))}&body=${encodeURIComponent(f.get("message") + "\n\n" + f.get("email"))}`;
   };
   const input = "mt-1 w-full rounded-lg border border-line/15 bg-bg px-4 py-3 outline-none focus:border-accent";
-  const row = "flex items-center gap-3 rounded-xl border border-line/10 p-4 transition hover:border-accent/50";
+  const row = "group relative flex items-center gap-3 overflow-hidden rounded-xl border border-line/10 p-4 transition hover:border-accent/50";
   return (
     <Section id="contact" title="Let's talk" sub="Hiring, collaborating or just saying hi: I reply within a day.">
       <div className="grid gap-8 md:grid-cols-[1fr_1.3fr]">
         <div className="space-y-4">
-          <div className="rounded-xl border border-line/10 bg-card/[0.04] p-4 text-sm">
+          <div className="rounded-xl border border-line/10 bg-gradient-to-br from-card/[0.07] to-card/[0.02] p-4 text-sm">
             <p className="font-semibold">Open to</p>
             {["Full-time roles", "Internships"].map((x) => <p key={x} className="mt-2 flex items-center gap-2 text-muted"><span className="h-2 w-2 rounded-full bg-emerald-500" /> {x}</p>)}
           </div>
-          <a href={`mailto:${ME.email}`} className={row}><Mail className="text-accent" /> {ME.email}</a>
-          <a href={ME.linkedin} target="_blank" rel="noreferrer" className={row}><Linkedin className="text-accent" /> LinkedIn</a>
-          <a href={ME.github} target="_blank" rel="noreferrer" className={row}><Github className="text-accent" /> GitHub</a>
+          <a href={`mailto:${ME.email}`} className={row} onMouseMove={track}><Spot /><Mail className="text-accent" /> {ME.email}</a>
+          <a href={ME.linkedin} target="_blank" rel="noreferrer" className={row} onMouseMove={track}><Spot /><Linkedin className="text-accent" /> LinkedIn</a>
+          <a href={ME.github} target="_blank" rel="noreferrer" className={row} onMouseMove={track}><Spot /><Github className="text-accent" /> GitHub</a>
         </div>
-        <form onSubmit={send} className="space-y-4 rounded-2xl border border-line/10 bg-card/[0.04] p-6">
+        <form onSubmit={send} className="space-y-4 rounded-2xl border border-line/10 bg-gradient-to-br from-card/[0.07] to-card/[0.02] p-6">
           <label className="block text-sm">Name<input name="name" required className={input} /></label>
           <label className="block text-sm">Email<input name="email" type="email" required className={input} /></label>
           <label className="block text-sm">Message<textarea name="message" rows="4" required className={input} /></label>
