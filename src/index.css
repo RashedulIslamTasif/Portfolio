@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root, [data-theme="dark"] { --bg: 11 15 23; --fg: 226 232 240; --muted: 148 163 184; --card: 255 255 255; --line: 255 255 255; --accent: 56 189 248; --accent2: 99 102 241; --onaccent: 2 6 23; color-scheme: dark; }
+[data-theme="light"] { --bg: 247 248 252; --fg: 15 23 42; --muted: 71 85 105; --card: 15 23 42; --line: 15 23 42; --accent: 3 105 161; --accent2: 79 70 229; --onaccent: 255 255 255; color-scheme: light; }
+
+html { scroll-behavior: smooth; }
+body { background: rgb(var(--bg)); color: rgb(var(--fg)); font-family: Inter, system-ui, sans-serif; }
+.theme-anim, .theme-anim * { transition: background-color .35s, border-color .35s, color .35s, fill .35s !important; }
+:focus-visible { outline: 2px solid rgb(var(--accent)); outline-offset: 3px; }
+.marquee { animation: marquee 30s linear infinite; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
