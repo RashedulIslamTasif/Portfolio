@@ -258,7 +258,7 @@ function Tilt({ children, i }) {
       onMouseLeave={() => setS({ rotateX: 0, rotateY: 0 })}
       className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line/10 bg-gradient-to-br from-card/[0.07] to-card/[0.02] p-6 transition-shadow hover:border-accent/40 hover:shadow-xl hover:shadow-accent/10">
       <Spot />
-      <span aria-hidden className="pointer-events-none absolute right-5 top-3 font-mono text-6xl font-extrabold text-fg/[0.05]">0{i + 1}</span>
+      <span aria-hidden className="pointer-events-none absolute right-6 top-7 font-mono text-sm font-semibold tracking-widest text-muted/50">0{i + 1}</span>
       {children}
     </motion.article>
   );
